@@ -3,8 +3,8 @@
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 
-const char* ssid = "your_SSID";
-const char* password = "your_PASSWORD";
+const char* ssid = "LostInMyBoots-5G";
+const char* password = "K5W3a9y3e!?!";
 const char* serverName = "https://yourserver.com/api/data";
 
 WiFiClientSecure secureClient;

@@ -1,13 +1,9 @@
 #include "device_management.h"
-#include "humidity.h"
-#include "proximity.h"
-#include "light.h"
-#include "temperature.h"
-//#include "audio.h"
-#include "motion.h"
-#include "pressure.h"
+#include "i2c_manager.h"
+#include "spi_manager.h"
 #include "logging.h"
-#include "visualization.h"
+
+std::vector<Device> NexusConnectedDevices;
 
 void initializeDeviceManagement() {
     // Initial device management setup if needed
@@ -15,51 +11,79 @@ void initializeDeviceManagement() {
 }
 
 void verifyDevices() {
-    // Verify each device to ensure it is active
     logMessage(LOG_LEVEL_DEBUG, "Verifying devices...");
 
-    // Example verification for each sensor:
-    if (!initializeHumiditySensor()) {
-        logMessage(LOG_LEVEL_WARN, "Humidity sensor verification failed!");
-    }
-    if (!initializeProximitySensor()) {
-        logMessage(LOG_LEVEL_WARN, "Proximity sensor verification failed!");
-    }
-    if (!initializeLightSensor()) {
-        logMessage(LOG_LEVEL_WARN, "Light sensor verification failed!");
-    }
-    if (!initializeTemperatureSensor()) {
-        logMessage(LOG_LEVEL_WARN, "Temperature sensor verification failed!");
-    }
-    /* if (!initializeAudioSensor()) {
-        logMessage(LOG_LEVEL_WARN, "Audio sensor verification failed!");
-    }*/
-    if (!initializeMotionSensor()) {
-        logMessage(LOG_LEVEL_WARN, "Motion sensor verification failed!");
-    }
-    if (!initializePressureSensor()) {
-        logMessage(LOG_LEVEL_WARN, "Pressure sensor verification failed!");
+    // Scan I2C bus
+    for (int address = 1; address <= 126; ++address) {
+        if (isI2CDeviceConnected(address)) {
+            // Check if device is already in the vector
+            bool exists = false;
+            for (const auto& device : NexusConnectedDevices) {
+                if (device.busType == "I2C" && device.addressOrCS == address) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists && NexusConnectedDevices.size() < 6) {
+                addI2CDevice(address, "Unknown I2C Device");
+            }
+        } else {
+            removeDevice("I2C", address);
+        }
     }
 
-    logMessage(LOG_LEVEL_INFO, "Device verification completed.");
+    // Scan SPI bus
+    for (int csPin = 1; csPin <= 6; ++csPin) {
+        if (isSPIDeviceConnected(csPin)) {
+            bool exists = false;
+            for (const auto& device : NexusConnectedDevices) {
+                if (device.busType == "SPI" && device.addressOrCS == csPin) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists && NexusConnectedDevices.size() < 6) {
+                addSPIDevice(csPin, "Unknown SPI Device");
+            }
+        } else {
+            removeDevice("SPI", csPin);
+        }
+    }
+
+    logConnectedDevices();
 }
 
-void collectSensorData() {
-    // Collect data from all sensors and send it
-    logMessage(LOG_LEVEL_DEBUG, "Collecting sensor data...");
+void addI2CDevice(int address, const std::string& name) {
+    if (NexusConnectedDevices.size() < 6) {
+        NexusConnectedDevices.push_back({"I2C", address, name});
+        logMessage(LOG_LEVEL_INFO, ("Added I2C device at address " + std::to_string(address)).c_str());
+    } else {
+        logMessage(LOG_LEVEL_WARN, "Device list full, cannot add I2C device.");
+    }
+}
 
-    float humidity = readHumidity();
-    float proximity = readProximity();
-    float light = readLight();
-    float temperature = readTemperature();
-    // float audio = readAudio();
-    float motion = readMotion();
-    float pressure = readPressure();
+void addSPIDevice(int csPin, const std::string& name) {
+    if (NexusConnectedDevices.size() < 6) {
+        NexusConnectedDevices.push_back({"SPI", csPin, name});
+        logMessage(LOG_LEVEL_INFO, ("Added SPI device at CS pin " + std::to_string(csPin)).c_str());
+    } else {
+        logMessage(LOG_LEVEL_WARN, "Device list full, cannot add SPI device.");
+    }
+}
 
-    // Use 0.0 or NaN to indicate missing audio data
-    float audioPlaceholder = 0.0;  // or NAN for Not-a-Number, if you prefer
+void removeDevice(const std::string& busType, int addressOrCS) {
+    for (auto it = NexusConnectedDevices.begin(); it != NexusConnectedDevices.end(); ++it) {
+        if (it->busType == busType && it->addressOrCS == addressOrCS) {
+            logMessage(LOG_LEVEL_INFO, ("Removed " + busType + " device at address/CS " + std::to_string(addressOrCS)).c_str());
+            NexusConnectedDevices.erase(it);
+            break;
+        }
+    }
+}
 
-    processAndSendData(humidity, proximity, light, temperature, motion, audioPlaceholder, pressure);
-
-    logMessage(LOG_LEVEL_INFO, "Sensor data collection completed.");
+void logConnectedDevices() {
+    logMessage(LOG_LEVEL_INFO, "Currently connected devices:");
+    for (const auto& device : NexusConnectedDevices) {
+        logMessage(LOG_LEVEL_INFO, ("- " + device.busType + " device at address/CS " + std::to_string(device.addressOrCS)).c_str());
+    }
 }

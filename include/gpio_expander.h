@@ -1,10 +1,17 @@
 #ifndef GPIO_EXPANDER_H
 #define GPIO_EXPANDER_H
 
-#include <Adafruit_MCP23X17.h>
+#include <MCP23S17.h>
 
-extern Adafruit_MCP23X17 mcp;
+extern MCP23S17 mcp;
 
-void initializeGPIOExpander();
+// Function to setup the GPIO expander
+void setupGPIOexpander();
+
+// Function to read from a specific GPIO pin on the expander
+uint8_t readGPIOpin(uint8_t pin);
+
+// Function to write to a specific GPIO pin on the expander
+void writeGPIOpin(uint8_t pin, uint8_t value);
 
 #endif

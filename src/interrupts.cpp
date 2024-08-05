@@ -1,4 +1,4 @@
-#include "interrupts.h"
+/*#include "interrupts.h"
 #include <Arduino.h>
 
 // Define interrupt pins for each sensor
@@ -36,7 +36,7 @@ void IRAM_ATTR temperatureISR() {
 
 /*void IRAM_ATTR audioISR() {
     audioFlag = true;
-}*/
+}
 
 void IRAM_ATTR motionISR() {
     motionFlag = true;
@@ -74,10 +74,10 @@ void handleInterrupts() {
         // Process temperature
         temperatureFlag = false;  // Reset flag after processing
     }
-    /*if (audioFlag) {
+    if (audioFlag) {
         // Process audio
         audioFlag = false;  // Reset flag after processing
-    }*/
+    }
     if (motionFlag) {
         // Process motion
         motionFlag = false;  // Reset flag after processing
@@ -86,4 +86,4 @@ void handleInterrupts() {
         // Process pressure
         pressureFlag = false;  // Reset flag after processing
     }
-}
+}*/

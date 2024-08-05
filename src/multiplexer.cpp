@@ -1,4 +1,4 @@
-#include "multiplexer.h"
+/*#include "multiplexer.h"
 #include <HC4051.h>
 #include "logging.h"
 
@@ -18,3 +18,4 @@ void selectMultiplexerChannel(uint8_t channel) {
     multiplexer.setChannel(channel);
     logMessage(LOG_LEVEL_DEBUG, ("Multiplexer channel selected: " + String(channel)).c_str());
 }
+*/

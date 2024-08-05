@@ -1,4 +1,4 @@
-#ifndef INTERRUPTS_H
+/*#ifndef INTERRUPTS_H
 #define INTERRUPTS_H
 
 #include <Arduino.h>
@@ -14,4 +14,4 @@ void IRAM_ATTR pressureISR();
 void initializeInterrupts();
 void handleInterrupts();
 
-#endif
+#endif*/
