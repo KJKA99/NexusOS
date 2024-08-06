@@ -3,19 +3,43 @@
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 
-const char* ssid = "LostInMyBoots-5G";
-const char* password = "K5W3a9y3e!?!";
+String ssid;
+String password;
 const char* serverName = "https://yourserver.com/api/data";
 
 WiFiClientSecure secureClient;
 
 void connectToWiFi() {
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(1000);
-        Serial.println("Connecting to WiFi...");
+    Serial.println("Enter SSID: ");
+    while (Serial.available() == 0) {
+        // Wait for user input
     }
-    Serial.println("Connected to WiFi");
+    String ssid = Serial.readStringUntil('\n');
+    ssid.trim(); // Remove any trailing newline characters
+
+    Serial.println("Enter Password: ");
+    while (Serial.available() == 0) {
+        // Wait for user input
+    }
+    String password = Serial.readStringUntil('\n');
+    password.trim(); // Remove any trailing newline characters
+
+    Serial.println("Attempting to connect to WiFi...");
+    WiFi.begin(ssid.c_str(), password.c_str());
+
+    unsigned long startAttemptTime = millis();
+
+    // Wait for connection with timeout
+    while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 10000) {
+        delay(500);
+        Serial.print(".");
+    }
+
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("\nConnected to WiFi");
+    } else {
+        Serial.println("\nFailed to connect to WiFi");
+    }
 }
 
 void processAndSendData(float humidity, float proximity, float light, float temperature, float audio, float motion, float pressure) {

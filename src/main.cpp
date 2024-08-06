@@ -25,6 +25,7 @@ void setup() {
     initializeProtocols();  // Initialize communication protocols
     initializeSensors();    // Initialize all sensors
     initializeDeviceManagement(); // Initialize device management
+    connectToWiFi();
 
     logMessage(LOG_LEVEL_INFO, "Setup complete.");
 
