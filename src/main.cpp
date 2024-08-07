@@ -22,10 +22,13 @@
 
 void setup() {
     Serial.begin(115200);
+    delay(2000);
+    //scanWiFi();
+    connectToWiFi();
     initializeProtocols();  // Initialize communication protocols
     initializeSensors();    // Initialize all sensors
     initializeDeviceManagement(); // Initialize device management
-    connectToWiFi();
+    
 
     logMessage(LOG_LEVEL_INFO, "Setup complete.");
 

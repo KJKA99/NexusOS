@@ -3,42 +3,29 @@
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 
-String ssid;
-String password;
-const char* serverName = "https://yourserver.com/api/data";
+const char* ssid = "Placeholder";
+const char* password = "Placeholder";
+const char* serverName = "Placeholder";
 
 WiFiClientSecure secureClient;
 
 void connectToWiFi() {
-    Serial.println("Enter SSID: ");
-    while (Serial.available() == 0) {
-        // Wait for user input
-    }
-    String ssid = Serial.readStringUntil('\n');
-    ssid.trim(); // Remove any trailing newline characters
-
-    Serial.println("Enter Password: ");
-    while (Serial.available() == 0) {
-        // Wait for user input
-    }
-    String password = Serial.readStringUntil('\n');
-    password.trim(); // Remove any trailing newline characters
-
-    Serial.println("Attempting to connect to WiFi...");
-    WiFi.begin(ssid.c_str(), password.c_str());
-
-    unsigned long startAttemptTime = millis();
-
-    // Wait for connection with timeout
-    while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 10000) {
-        delay(500);
-        Serial.print(".");
-    }
-
-    if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("\nConnected to WiFi");
-    } else {
-        Serial.println("\nFailed to connect to WiFi");
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("Attempting to connect to WiFi...");
+        WiFi.begin(ssid, password);
+        unsigned long startAttemptTime = millis();
+        
+        // Wait for connection with a timeout
+        while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 10000) {
+            delay(500);
+            Serial.print(".");
+        }
+        
+        if (WiFi.status() == WL_CONNECTED) {
+            Serial.println("Connected to WiFi");
+        } else {
+            Serial.println("Failed to connect to WiFi");
+        }
     }
 }
 
